@@ -24,7 +24,7 @@ from inventory.models import Batch, InventoryTransaction
 class UnitViewSet(viewsets.ModelViewSet):
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['code', 'name']
     ordering_fields = ['code', 'name']
@@ -33,7 +33,7 @@ class UnitViewSet(viewsets.ModelViewSet):
 class PartnerViewSet(viewsets.ModelViewSet):
     queryset = Partner.objects.all()
     serializer_class = PartnerSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['name', 'phone', 'address']
     ordering_fields = ['name', 'created_at']
@@ -97,7 +97,7 @@ class PartnerViewSet(viewsets.ModelViewSet):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['sku', 'name', 'description']
     ordering_fields = ['sku', 'name', 'product_type', 'price']
@@ -112,7 +112,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def dashboard_stats(request):
     # 1. Tổng quan
     total_orders = SaleOrder.objects.count()
@@ -206,7 +206,7 @@ def login_view(request):
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
-@ensure_csrf_cookie 
+@ensure_csrf_cookie # Ép Django gửi cookie csrftoken về
 def get_csrf_token(request):
     return Response({"detail": "CSRF cookie set"})
 
