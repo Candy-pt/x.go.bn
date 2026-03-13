@@ -143,10 +143,9 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
-# Nếu dùng proxy (baseURL: '/api') thì thêm domain backend nếu cần
-# CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000", "http://localhost:8000"]
 
 CORS_ALLOWED_ORIGINS = [
+    "https://x-go-9muq.vercel.app",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
