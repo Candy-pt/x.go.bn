@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.db import transaction
 from django.utils import timezone
@@ -18,7 +18,7 @@ from .serializers import SaleOrderSerializer
 class SaleOrderViewSet(viewsets.ModelViewSet):
     queryset = SaleOrder.objects.all().order_by('-order_date')
     serializer_class = SaleOrderSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['code', 'customer__name', 'note']
     ordering_fields = ['order_date', 'delivery_date', 'status']  # Bỏ total_value vì là property
