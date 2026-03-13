@@ -28,6 +28,7 @@ DEBUG = True
 # For development: allow localhost and loopback. DO NOT use '*' in production.
 ALLOWED_HOSTS = [
     'localhost',
+    'x-go.onrender.com',
     '127.0.0.1',
 ]
 
