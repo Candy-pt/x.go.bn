@@ -206,7 +206,7 @@ def login_view(request):
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
-@ensure_csrf_cookie # Ép Django gửi cookie csrftoken về
+@ensure_csrf_cookie 
 def get_csrf_token(request):
     return Response({"detail": "CSRF cookie set"})
 
