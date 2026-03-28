@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.db import transaction
 from django.utils import timezone
@@ -18,7 +18,7 @@ from .serializers import SaleOrderSerializer
 class SaleOrderViewSet(viewsets.ModelViewSet):
     queryset = SaleOrder.objects.all().order_by('-order_date')
     serializer_class = SaleOrderSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['code', 'customer__name', 'note']
     ordering_fields = ['order_date', 'delivery_date', 'status']  # Bỏ total_value vì là property
@@ -135,7 +135,7 @@ class SaleOrderViewSet(viewsets.ModelViewSet):
             needed_qty = item.quantity
             remaining_qty = needed_qty
             
-            # Lấy tất cả batch của sản phẩm, sắp xếp FIFO: cũ nhất trước
+            # Lấy tất cả batch của sản phẩm
             batches = Batch.objects.filter(product=product).order_by('import_date')
             
             for batch in batches:
@@ -154,7 +154,7 @@ class SaleOrderViewSet(viewsets.ModelViewSet):
                 batch_stock = import_total - export_total
                 
                 if batch_stock <= 0:
-                    continue  # lô này hết stock → bỏ qua
+                    continue  
                 
                 # Xuất bao nhiêu từ lô này
                 qty_to_export = min(remaining_qty, batch_stock)
@@ -170,7 +170,7 @@ class SaleOrderViewSet(viewsets.ModelViewSet):
                 
                 remaining_qty -= qty_to_export
             
-            # Sau khi duyệt hết lô, kiểm tra còn thiếu không
+            # Sau khi duyệt kiểm tra còn thiếu không
             if remaining_qty > 0:
                 raise ValidationError({
                     "error": f"Không đủ tồn kho cho sản phẩm {product.name}. "

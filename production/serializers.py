@@ -14,9 +14,7 @@ class ProductionOutputSerializer(serializers.ModelSerializer):
 class ProductionRunSerializer(serializers.ModelSerializer):
     raw_batch_code = serializers.CharField(source='raw_batch.batch_code', read_only=True)
     product_name = serializers.CharField(source='raw_batch.product.name', read_only=True)
-    # Lồng danh sách đầu ra vào trong đầu vào
     outputs = ProductionOutputSerializer(many=True)
-    # Thêm trường tính tỷ lệ hao hụt
     wastage_rate = serializers.SerializerMethodField()
     efficiency_rate = serializers.SerializerMethodField()
 
@@ -48,7 +46,7 @@ class ProductionRunSerializer(serializers.ModelSerializer):
         if not obj.raw_qty_used or obj.raw_qty_used <= 0:
             return None
         
-        # Tính tổng số lượng đầu ra
+        #  tổng lượng đầu ra
         total_output = sum(output.quantity for output in obj.outputs.all())
         
         # Tính hao hụt (%)
@@ -59,7 +57,7 @@ class ProductionRunSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         outputs_data = validated_data.pop('outputs')
         try:
-            with transaction.atomic(): # <--- Bọc tất cả vào khối an toàn này
+            with transaction.atomic(): 
                 # 1. Tạo ProductionRun (Sẽ trừ kho tạm thời)
                 run = ProductionRun.objects.create(**validated_data)
                 
@@ -67,12 +65,9 @@ class ProductionRunSerializer(serializers.ModelSerializer):
                 for output_data in outputs_data:
                     ProductionOutput.objects.create(run=run, **output_data)
                 
-                # Nếu chạy đến đây mà không lỗi thì Database mới chính thức lưu
                 return run
                 
         except Exception as e:
-            # Nếu có bất kỳ lỗi gì trong khối transaction.atomic()
-            # Django sẽ tự động ROLLBACK (Hoàn tác) lại việc trừ kho ở bước 1
             raise e
         
     def validate(self, data):
@@ -80,7 +75,6 @@ class ProductionRunSerializer(serializers.ModelSerializer):
         raw_qty_used = data.get('raw_qty_used')
         
         if raw_batch and raw_qty_used:
-            # Tính stock hiện tại (dùng annotate hoặc property)
             total_import = raw_batch.transactions.filter(transaction_type='IMPORT').aggregate(Sum('quantity'))['quantity__sum'] or 0
             total_export = raw_batch.transactions.filter(transaction_type='EXPORT').aggregate(Sum('quantity'))['quantity__sum'] or 0
             current_stock = total_import - total_export

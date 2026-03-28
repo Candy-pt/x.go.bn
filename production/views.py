@@ -1,5 +1,5 @@
 from rest_framework import viewsets, status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -12,7 +12,7 @@ from inventory.models import Batch
 class ProductionOrderViewSet(viewsets.ModelViewSet):
     queryset = ProductionOrder.objects.all().order_by('-created_at')
     serializer_class = ProductionOrderSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['code', 'sale_order__code', 'note']
     ordering_fields = ['created_at', 'status', 'start_date']
@@ -91,7 +91,7 @@ class ProductionOrderViewSet(viewsets.ModelViewSet):
 class ProductionRunViewSet(viewsets.ModelViewSet):
     queryset = ProductionRun.objects.all().order_by('-date')
     serializer_class = ProductionRunSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['production_order__code', 'raw_batch__batch_code', 'note']
     ordering_fields = ['date', 'raw_qty_used']

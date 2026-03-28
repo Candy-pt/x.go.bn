@@ -23,7 +23,9 @@ class Batch(models.Model):
     batch_code = models.CharField(max_length=50, unique=True, verbose_name="Mã lô") # VD: LO-20231025-01
     product = models.ForeignKey(Product, on_delete=models.PROTECT, verbose_name="Sản phẩm/Gỗ")
     supplier = models.ForeignKey(Partner, on_delete=models.PROTECT, verbose_name="Nhà cung cấp")
-
+    status = models.CharField( max_length=20, choices=[('ACTIVE', 'Đang sử dụng'), ('CLOSED', 'Đã dùng hết')],
+        default='ACTIVE' 
+    )
     import_date = models.DateTimeField(default=timezone.now, verbose_name="Ngày nhập")
     note = models.TextField(blank=True, null=True, verbose_name="Ghi chú")
     

@@ -81,10 +81,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'workshop_core.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
@@ -98,6 +94,11 @@ WSGI_APPLICATION = 'workshop_core.wsgi.application'
 #         },
 #     }
 # }
+
+
+
+#-----------------------------------------
+
 
 import os
 
@@ -169,9 +170,8 @@ CORS_ALLOW_CREDENTIALS = True
 # REST Framework Configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-        # 'rest_framework.authentication.TokenAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',

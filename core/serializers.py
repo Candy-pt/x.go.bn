@@ -37,3 +37,22 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError("Tên đăng nhập hoặc mật khẩu không đúng")
         data['user'] = user
         return data
+
+class RegisterSerializer(serializers.ModelSerializer):
+    # Thêm trường email nếu hệ thống của bạn cần, nếu không có thể bỏ qua
+    email = serializers.EmailField(required=False, allow_blank=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'password', 'email')
+        # Đảm bảo password chỉ được ghi, không bao giờ trả về trong response
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        # Sử dụng create_user để mật khẩu được băm (hash) an toàn
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email', ''),
+            password=validated_data['password']
+        )
+        return user

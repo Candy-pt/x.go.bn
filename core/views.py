@@ -8,7 +8,7 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from .models import Unit, Partner, Product
-from .serializers import UnitSerializer, PartnerSerializer, ProductSerializer, LoginSerializer, UserSerializer
+from .serializers import *
 from django.db.models import Sum, Count, F, Q, DecimalField
 from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -20,11 +20,10 @@ from rest_framework.authtoken.models import Token
 from inventory.models import Batch, InventoryTransaction
 
 
-
 class UnitViewSet(viewsets.ModelViewSet):
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['code', 'name']
     ordering_fields = ['code', 'name']
@@ -33,7 +32,7 @@ class UnitViewSet(viewsets.ModelViewSet):
 class PartnerViewSet(viewsets.ModelViewSet):
     queryset = Partner.objects.all()
     serializer_class = PartnerSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['name', 'phone', 'address']
     ordering_fields = ['name', 'created_at']
@@ -97,7 +96,7 @@ class PartnerViewSet(viewsets.ModelViewSet):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['sku', 'name', 'description']
     ordering_fields = ['sku', 'name', 'product_type', 'price']
@@ -112,7 +111,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def dashboard_stats(request):
     # 1. Tổng quan
     total_orders = SaleOrder.objects.count()
@@ -206,13 +205,13 @@ def login_view(request):
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
-@ensure_csrf_cookie # Ép Django gửi cookie csrftoken về
+@ensure_csrf_cookie 
 def get_csrf_token(request):
     return Response({"detail": "CSRF cookie set"})
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def logout_view(request):
     """
     API: POST /api/auth/logout/
@@ -228,3 +227,18 @@ def logout_view(request):
         status=status.HTTP_200_OK
     )
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_view(request):
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        return Response({
+            'user': UserSerializer(user).data,
+            'detail': 'Đăng ký tài khoản thành công!'
+        }, status=status.HTTP_201_CREATED)
+        
+    return Response(
+        {'detail': serializer.errors},
+        status=status.HTTP_400_BAD_REQUEST
+    )

@@ -13,5 +13,6 @@ urlpatterns = [
     path('get_csrf_token/', get_csrf_token, name='get_csrf_token'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('register/', views.register_view, name='register'),
     path('dashboard-stats/', views.dashboard_stats, name='dashboard-stats'),
 ]
