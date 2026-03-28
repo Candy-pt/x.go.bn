@@ -170,6 +170,10 @@ CORS_ALLOW_CREDENTIALS = True
 # REST Framework Configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 58f8dd2d0f8c0c37e2a75ea0977ad7c71a4fcd7e
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
